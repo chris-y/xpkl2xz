@@ -1,0 +1,15 @@
+==id $Id: xpksub_lib.sfd,v 1.0 2004/11/21 20:45:08 noname Exp $
+* "xpkGZIP.library"
+==base _XpkSubBase
+==basetype struct xpkGZIP *
+==libname xpkGZIP.library
+==bias 30
+==public
+==include <xpk/xpksub.h>
+struct XpkInfo * XpksPackerInfo() ()
+LONG XpksPackChunk(struct XpkSubParams * xpar) (a0)
+void XpksPackFree(struct XpkSubParams * xpar) (a0)
+LONG XpksPackReset(struct XpkSubParams * xpar) (a0)
+LONG XpksUnpackChunk(struct XpkSubParams * xpar) (a0)
+void XpksUnpackFree(struct XpkSubParams * xpar) (a0)
+==end

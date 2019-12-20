@@ -1,0 +1,126 @@
+Short:        XZ/LZMA2-based xpk packer
+Uploader:     chris@unsatisfactorysoftware.co.uk (Chris Young)
+Author:       Chris Young
+Type:         util/pack
+Version:      1.1
+Architecture: ppc-amigaos >= 4.0.0
+Requires:     util/libs/lzma_lib.lha
+
+This is an LZMA2-based sub-library for XPK.  LZMA2 is an updated
+version of LZMA (Lempel-Ziv-Markov) which in turn is based on the
+popular LZ77 algorithm.
+
+LZMA2 is usually found within the XZ container format, which is
+effectively what this packer is using.
+
+Compression modes (IMPORTANT!)
+==============================
+
+Modes 1-79 and 100 are recognised.  80-99 should be treated as
+reserved (the compression parameters for these are undefined).
+
+The first digit of the mode is the amount of compression, from 0-7.
+
+Extra filters are used depending on the last digit of the mode:
+x0 - no filters
+x1 - delta with distance 1
+x2 - delta with distance 2
+x3 - delta with distance 3
+x4 - delta with distance 4
+x9 - PowerPC
+
+Modes ending 5-8 are also using the PowerPC filter, but may not
+do so in future.
+
+Mode 100 is the same as mode 70, but with "extreme" set. This
+gives more compression but slower.
+
+The delta modes help compress data that changes slowly - eg, an 8-bit
+sound sample might be compressed better with delta1. A photograph in
+raw ARGB might compress better with delta4.  The PowerPC filter should
+be used for PPC executables.  Selecting the wrong filter may have a
+detrimental effect on compression ratios.
+
+Compression is generally better than xpkLZMA, particularly if the correct
+filters are deployed, however it tends to be slightly slower.
+
+Here's some example compression for lzma.library:
+As this is PPC code, modes ending in 9 are better than modes ending 0, and
+the delta modes actually reduce the amount of compression attainable.
+
+File 'lzma.library' with a size of 215924 bytes.
+Type  Num Version P    CSize     CTime      CSpd     UTime      USpd  Rate
+L2XZ:   0  1.1         68052      0.03   7197466      0.03   7197466  68.5
+L2XZ:   1  1.1         83256      0.06   3598733      0.04   5398100  61.5
+L2XZ:   2  1.1         94288      0.01  21592400      0.05   4318480  56.4
+L2XZ:   3  1.1         97836      0.01  21592400      0.05   4318480  54.7
+L2XZ:   4  1.1         89060      0.01  21592400      0.05   4318480  58.8
+L2XZ:   9  1.1         67264      0.02  10796200      0.04   5398100  68.9
+L2XZ:  10  1.1         66880      0.01  21592400      0.04   5398100  69.1
+L2XZ:  11  1.1         82552      0.03   7197466      0.05   4318480  61.8
+L2XZ:  12  1.1         94184      0.05   4318480      0.05   4318480  56.4
+L2XZ:  13  1.1         97564      0.06   3598733      0.05   4318480  54.9
+L2XZ:  14  1.1         88824      0.04   5398100      0.05   4318480  58.9
+L2XZ:  19  1.1         66056      0.01  21592400      0.04   5398100  69.5
+L2XZ:  20  1.1         66604      0.01  21592400      0.04   5398100  69.2
+L2XZ:  21  1.1         82348      0.02  10796200      0.05   4318480  61.9
+L2XZ:  22  1.1         94036      0.03   7197466      0.06   3598733  56.5
+L2XZ:  23  1.1         97452      0.04   5398100      0.06   3598733  54.9
+L2XZ:  24  1.1         88700      0.02  10796200      0.06   3598733  59.0
+L2XZ:  29  1.1         65764      0.01  21592400      0.05   4318480  69.6
+L2XZ:  30  1.1         66480      0.05   4318480      0.06   3598733  69.3
+L2XZ:  31  1.1         82280      0.06   3598733      0.01  21592400  61.9
+L2XZ:  32  1.1         93992      0.01  21592400      0.01  21592400  56.5
+L2XZ:  33  1.1         97432      0.01  21592400      0.01  21592400  54.9
+L2XZ:  34  1.1         88664      0.07   3084628      0.01  21592400  59.0
+L2XZ:  39  1.1         65652      0.05   4318480      0.06   3598733  69.6
+L2XZ:  40  1.1         63952      0.01  21592400      0.06   3598733  70.4
+L2XZ:  41  1.1         80948      0.04   5398100      0.01  21592400  62.6
+L2XZ:  42  1.1         90312      0.02  10796200      0.01  21592400  58.2
+L2XZ:  43  1.1         95068      0.02  10796200      0.01  21592400  56.0
+L2XZ:  44  1.1         86212      0.04   5398100      0.01  21592400  60.1
+L2XZ:  49  1.1         63092      0.01  21592400      0.06   3598733  70.8
+L2XZ:  50  1.1         63760      1.01    213786      0.01  21592400  70.5
+L2XZ:  51  1.1         80828      1.04    207619      0.02  10796200  62.6
+L2XZ:  52  1.1         90104      1.02    211690      0.02  10796200  58.3
+L2XZ:  53  1.1         94868      1.02    211690      0.03   7197466  56.1
+L2XZ:  54  1.1         86060      1.04    207619      0.03   7197466  60.2
+L2XZ:  59  1.1         62892      1.00    215924      0.01  21592400  70.9
+L2XZ:  60  1.1         63700      1.01    213786      0.01  21592400  70.5
+L2XZ:  61  1.1         80752      1.04    207619      0.02  10796200  62.7
+L2XZ:  62  1.1         90016      1.02    211690      0.02  10796200  58.4
+L2XZ:  63  1.1         94828      1.02    211690      0.03   7197466  56.1
+L2XZ:  64  1.1         86348      1.03    209634      0.03   7197466  60.1
+L2XZ:  69  1.1         62836      1.01    213786      0.01  21592400  70.9
+L2XZ:  70  1.1         63700      1.00    215924      0.06   3598733  70.5
+L2XZ:  71  1.1         80752      1.03    209634      0.01  21592400  62.7
+L2XZ:  72  1.1         90016      1.01    213786      0.01  21592400  58.4
+L2XZ:  73  1.1         94828      1.01    213786      0.01  21592400  56.1
+L2XZ:  74  1.1         86348      1.02    211690      0.01  21592400  60.1
+L2XZ:  79  1.1         62836      1.00    215924      0.07   3084628  70.9 *
+L2XZ: 100  1.1         63784      2.00    107962      0.06   3598733  70.5
+
+LZMA: 100 52.2         63608      1.00    215924      0.02  10796200  70.6
+BZP2: 100  1.7         78680      1.04    207619      0.05   4318480  63.6
+GZIP: 100 50.4         77592      0.03   7197466      0.01  21592400  64.1
+
+
+X1000 users
+===========
+
+I've been advised that this sub-lib is very slow when packing on an X1000.
+I believe this is because lzma.library when compiled was built to use
+instructions which cause an exception on the PA6T.  I have yet to find
+the correct compiler switches which fix this as well as producing a working
+lzma.library.
+
+
+DISCLAIMER
+==========
+
+No warranty is expessed nor implied for this software.  If you compress data
+using it, there is no guarantee it will be uncompressible in future.  Please
+keep an uncompressed copy of any data you care about.  The author will not
+take responsibility for any loss of data due to direct or indirect use of
+this software.  If you don't agree to these terms, you must delete the
+archive without installing it.
